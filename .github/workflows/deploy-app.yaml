@@ -34,6 +34,8 @@ jobs:
         # Build Docker image with the correct Dockerfile and context
         docker build auth-back --file auth-back/Dockerfile --tag $IMAGE_NAME:$UNIQUE_TAG
         docker tag $IMAGE_NAME:$UNIQUE_TAG $IMAGE_NAME:latest
+        # List images for debugging
+        docker images
 
     # Step 4: Push the Docker image to Docker Hub
     - name: Push Docker image to Docker Hub
