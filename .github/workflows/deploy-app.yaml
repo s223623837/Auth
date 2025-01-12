@@ -41,4 +41,3 @@ jobs:
 
         # Push both the unique tag and the latest tag
         docker push $IMAGE_NAME:$UNIQUE_TAG
-        docker push $IMAGE_NAME:latest
