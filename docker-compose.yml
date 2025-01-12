@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: rootUser        # Root username for MongoDB
+      MONGO_INITDB_ROOT_PASSWORD: rootPassword    # Root password for MongoDB
+    ports:
+      - "27017:27017"                             # Expose MongoDB port to the host
+    volumes:
+      - mongo-data:/data/db                      # Mount persistent volume for MongoDB data
+
+  mongo-express:
+    image: mongo-express:latest
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb            # MongoDB service name
+      ME_CONFIG_MONGODB_PORT: 27017              # MongoDB port
+      ME_CONFIG_MONGODB_ADMINUSERNAME: rootUser  # Admin username for Mongo Express
+      ME_CONFIG_MONGODB_ADMINPASSWORD: rootPassword  # Admin password for Mongo Express
+    ports:
+      - "8081:8081"                             # Expose Mongo Express to the host
+
+  auth-back:
+    image: auth-back:latest                           # Specify your custom Node.js app image
+    container_name: auth-back-container
+    environment:
+      MONGODB_URI: mongodb://rootUser:rootPassword@mongodb
+      JWT_SECRET: topsecretmebidhan
+    ports:
+      - "3000:3000"                              # Expose port 3000 for your Node.js app
+    depends_on:
+      - mongodb                                     # Ensure mongo service is available before starting auth-back
+
+volumes:
+  mongo-data:                                    # Ensure the volume is defined here
+    driver: local
