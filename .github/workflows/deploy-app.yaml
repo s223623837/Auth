@@ -7,42 +7,35 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # Step 2: Log in to Docker Hub
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-    # Step 3: Build and tag Docker image
-    - name: Build and tag Docker image
-      run: |
-        IMAGE_NAME=auth
-        GIT_SHA=$(git rev-parse --short HEAD)  # Unique version from Git commit SHA
-        TIMESTAMP=$(date +%Y%m%d%H%M%S)       # Unique version from timestamp
-        UNIQUE_TAG=${GIT_SHA}-${TIMESTAMP}    # Combine both for a truly unique tag
-
-        # Build Docker image with the correct Dockerfile and context
-        docker build auth-back --file auth-back/Dockerfile --tag $IMAGE_NAME:$UNIQUE_TAG
-        docker tag $IMAGE_NAME:$UNIQUE_TAG $IMAGE_NAME:latest
-        # List images for debugging
-        docker images
-
-    # Step 4: Push the Docker image to Docker Hub
-    - name: Push Docker image to Docker Hub
+    - name: Build, Tag, and Push Docker Image
       run: |
         IMAGE_NAME=auth
         GIT_SHA=$(git rev-parse --short HEAD)
         TIMESTAMP=$(date +%Y%m%d%H%M%S)
         UNIQUE_TAG=${GIT_SHA}-${TIMESTAMP}
+
+        # Build the Docker image with a unique tag
+        docker build auth-back --file auth-back/Dockerfile --tag $IMAGE_NAME:$UNIQUE_TAG
+
+        # Tag the latest version
+        docker tag $IMAGE_NAME:$UNIQUE_TAG $IMAGE_NAME:latest
+
+        # Debug: List images to verify tags
+        docker images
+
+        # Push both the unique tag and the latest tag
         docker push $IMAGE_NAME:$UNIQUE_TAG
         docker push $IMAGE_NAME:latest
