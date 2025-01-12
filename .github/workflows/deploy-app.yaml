@@ -22,12 +22,15 @@ jobs:
 
     - name: Build, Tag, and Push Docker Image
       run: |
-        IMAGE_NAME=auth
+        # Set the image name to include your Docker Hub username
+        IMAGE_NAME=bids4u/auth  # Replace 'bids4u' with your Docker Hub username and 'auth' with the repo name
+        
+        # Get the short Git commit SHA and timestamp
         GIT_SHA=$(git rev-parse --short HEAD)
         TIMESTAMP=$(date +%Y%m%d%H%M%S)
         UNIQUE_TAG=${GIT_SHA}-${TIMESTAMP}
 
-        # Build the Docker image with a unique tag
+        # Build the Docker image with the unique tag
         docker build auth-back --file auth-back/Dockerfile --tag $IMAGE_NAME:$UNIQUE_TAG
 
         # Tag the latest version
